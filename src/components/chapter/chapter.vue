@@ -1,0 +1,135 @@
+<template>
+  <div class="chapter">
+    <div v-if="list.introduce" class="chapter-introduce">
+      {{ list.introduce }}
+    </div>
+    <div v-for="(chapter,index) in list.data" :key="index" class="chapter-item">
+      <h2 class="chapter-title">
+        {{ chapter.title }}
+      </h2>
+      <p class="chapter-desc">
+        {{ chapter.desc }}
+      </p>
+      <ul>
+        <li v-for="(term, index) in chapter.term" :key="index" class="term-item" @click="selectThisRes(term)">
+          <p>
+            <span class="iconfont play">&#xe615;</span>
+            <span>{{ term.title }}({{ term.type }})</span>
+            <span class="right">
+              <i v-if="term.rate == 100" class="iconfont complete">&#xe60f;</i>
+              <span v-else-if="term.rate > 0 && term.rate < 100" class="doning">
+                最近学习
+                <i class="iconfont">&#xe601;</i>
+              </span>
+              <i v-else class="iconfont ready">&#xe6e8;</i>
+            </span>
+          </p>
+        </li>
+      </ul>
+    </div>
+    <p class="complete-info">
+      <i class="iconfont">&#xe786;</i>
+      本课程已完结
+    </p>
+  </div>
+</template>
+<script>
+export default {
+  methods:{
+    selectThisRes(term){
+      this.$store.state.res_url = term.url
+      // 直接跳到参加考试的页面，查看所有题目的详细情况
+      if(term.type=='video') {
+        const routeUrl = this.$router.resolve({
+          path: `/resource/show-video/a`
+        })
+        this.$router.push(routeUrl.href)
+      }else if(term.type=='homework'){
+        const routeUrl = this.$router.resolve({
+          path: `/resource/show-homework/`+term.id
+        })
+        this.$router.push(routeUrl.href)
+      }
+
+    }
+  },
+  props: {
+    list: {
+      type: [Object],
+      default () {
+        return {}
+      }
+    }
+  }
+}
+</script>
+
+<style lang="stylus" scoped>
+  .chapter
+    & > div
+      margin-bottom: 16px;
+      padding: 24px 32px 32px;
+      background-color: #fff;
+      box-shadow: 0 8px 16px rgba(7,17,27,0.1);
+      border-radius: 12px;
+      color: #1c1f21;
+      font-size: 14px;
+      &.chapter-introduce
+        line-height: 28px;
+      &.chapter-item
+        .chapter-title
+          font-size: 16px;
+          line-height: 24px;
+          font-weight: 700;
+        .chapter-desc
+          margin-top: 2px;
+          margin-bottom: 16px;
+          font-size: 12px;
+          color: #545c63;
+        .term-item
+          width: 100%;
+          padding-left: 12px;
+          line-height: 48px;
+          cursor: pointer;
+          & > p
+            display: flex;
+            align-items: center;
+            & > span
+              &:nth-child(2)
+                flex: 1;
+          &:hover
+            background-color: rgba(242,13,13,.05);
+            border-radius: 4px;
+            color: #f20d0d;
+            .play
+              color: #f20d0d;
+            .right
+              & > i
+                color: #f20d0d!important;
+          .play
+            margin-right: 8px;
+            font-size: 24px;
+            color: #9199a1;
+          .right
+            margin-right:15px;
+            font-size: 16px;
+            color: #d9dde1;
+            .complete, .doning
+              color: #00b43c;
+              font-size: 12px;
+            .doning
+              i
+                margin-left: 10px;
+                font-size: 12px;
+    .complete-info
+      margin-bottom: 16px;
+      padding: 12px 0 12px 32px;
+      font-size: 16px;
+      color: #93999f;
+      line-height: 24px;
+      .iconfont
+        display: inline-block;
+        vertical-align: middle;
+        margin-right: 12px;
+        font-size: 24px;
+</style>
